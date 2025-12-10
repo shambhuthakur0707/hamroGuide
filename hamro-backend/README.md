@@ -1,3 +1,29 @@
+# hamro-backend
+
+Quick notes to run the backend locally.
+
+Prerequisites
+- Node.js (v16+ recommended)
+- MongoDB running locally or a remote MongoDB URI
+
+Setup
+1. Copy `.env.example` to `.env` and set `MONGO_URI` if you have a remote DB. If you leave it empty the app will try a local MongoDB at `mongodb://127.0.0.1:27017/hamroGuide`.
+2. Install dependencies:
+
+```powershell
+Set-Location .\hamro-backend
+npm install
+```
+
+Run server
+
+```powershell
+Set-Location .\hamro-backend
+node server.js
+```
+
+Notes
+- The server will attempt to connect to the URI in `MONGO_URI`. If that fails and the env var is set, it will try the local fallback. If both fail the server will still start but DB-backed features will not work.
 # Hamro Backend
 
 Quick steps to run the backend locally.
