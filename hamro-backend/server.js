@@ -1,5 +1,5 @@
 // server.js (root)
-// Ensure environment variables are loaded before any other module imports
+// environment variables are loaded before any other module imports
 import 'dotenv/config';
 import app from "./src/app.js";
 

@@ -9,7 +9,7 @@ const connectDB = async () => {
   console.log("[DB] Using MongoDB URI:", uri.startsWith("mongodb://") || uri.startsWith("mongodb+srv://") ? uri : "(masked)");
 
   try {
-    // Use recommended options by mongoose by default in modern versions
+    // Use recommended options by mongoose 
     await mongoose.connect(uri, {
       // these are mongoose defaults in v6+, kept for explicitness
       autoIndex: true,

@@ -292,4 +292,4 @@ ISC
 
 ---
 
-**Built as part of internship at [Company Name]**
+**Built as part of internship**
