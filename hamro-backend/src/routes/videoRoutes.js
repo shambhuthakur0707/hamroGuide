@@ -1,7 +1,9 @@
 import express from "express";
+import transformIds from "../middleware/transformIds.js";
 import {
   createVideo,
   getAllVideos,
+  getVideosByProgram,  // NEW
   getVideoById,
   updateVideo,
   deleteVideo
@@ -9,19 +11,13 @@ import {
 
 const router = express.Router();
 
-// CREATE
+router.use(transformIds('video'));
+
 router.post("/create", createVideo);
-
-// READ ALL
 router.get("/", getAllVideos);
-
-// READ ONE
+router.get("/program/:program_id", getVideosByProgram);  // NEW
 router.get("/:id", getVideoById);
-
-// UPDATE
 router.put("/:id", updateVideo);
-
-// DELETE
 router.delete("/:id", deleteVideo);
 
 export default router;

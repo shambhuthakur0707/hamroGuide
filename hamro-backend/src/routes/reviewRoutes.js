@@ -2,20 +2,22 @@ import express from "express";
 import {
   createReview,
   getProgramReviews,
+  updateReview,
+  deleteReview
 } from "../controllers/reviewController.js";
 
 const router = express.Router();
 
-/**
- * Create a new review
- * POST /api/reviews
- */
+// CREATE review
 router.post("/", createReview);
 
-/**
- * Get all reviews + rating summary for a program
- * GET /api/reviews/program/:programId
- */
+// READ reviews for a program
 router.get("/program/:programId", getProgramReviews);
+
+// UPDATE review
+router.put("/:id", updateReview);
+
+// DELETE review
+router.delete("/:id", deleteReview);
 
 export default router;

@@ -1,6 +1,6 @@
 import Video from "../models/Video.js";
 
-// CREATE - Already exists
+// CREATE VIDEO
 export const createVideo = async (req, res) => {
   try {
     const video = await Video.create(req.body);
@@ -10,7 +10,7 @@ export const createVideo = async (req, res) => {
   }
 };
 
-// READ ALL - NEW
+// READ ALL VIDEOS
 export const getAllVideos = async (req, res) => {
   try {
     const videos = await Video.find().sort({ createdAt: -1 });
@@ -20,7 +20,21 @@ export const getAllVideos = async (req, res) => {
   }
 };
 
-// READ ONE - NEW
+// NEW: GET VIDEOS BY PROGRAM
+export const getVideosByProgram = async (req, res) => {
+  try {
+    const { program_id } = req.params;
+    
+    const videos = await Video.find({ program_id })
+      .sort({ order: 1, createdAt: -1 });
+    
+    res.json(videos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// READ SINGLE VIDEO
 export const getVideoById = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -33,7 +47,7 @@ export const getVideoById = async (req, res) => {
   }
 };
 
-// UPDATE - NEW
+// UPDATE VIDEO
 export const updateVideo = async (req, res) => {
   try {
     const video = await Video.findByIdAndUpdate(
@@ -52,7 +66,7 @@ export const updateVideo = async (req, res) => {
   }
 };
 
-// DELETE - NEW
+// DELETE VIDEO
 export const deleteVideo = async (req, res) => {
   try {
     const video = await Video.findByIdAndDelete(req.params.id);

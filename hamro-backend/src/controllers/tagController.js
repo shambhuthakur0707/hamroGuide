@@ -1,44 +1,57 @@
 import Tag from "../models/Tag.js";
 
-// CREATE - Already exists
+// CREATE TAG
 export const createTag = async (req, res) => {
   try {
-    const tag = await Tag.create(req.body);
-    res.json(tag);
+    const { name_en, name_sl } = req.body;
+
+    // Validate input
+    if (!name_en || !name_sl) {
+      return res.status(400).json({ 
+        error: "Both name_en and name_sl are required" 
+      });
+    }
+
+    const tag = await Tag.create({ name_en, name_sl });
+    res.status(201).json(tag);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// READ ALL - NEW
+// GET ALL TAGS
 export const getAllTags = async (req, res) => {
   try {
-    const tags = await Tag.find().sort({ name: 1 });
-    res.json(tags);
+    const tags = await Tag.find().sort({ name_en: 1 });
+    res.status(200).json(tags);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// READ ONE - NEW
+// GET SINGLE TAG BY ID
 export const getTagById = async (req, res) => {
   try {
     const tag = await Tag.findById(req.params.id);
+    
     if (!tag) {
       return res.status(404).json({ error: "Tag not found" });
     }
-    res.json(tag);
+    
+    res.status(200).json(tag);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// UPDATE - NEW
+// UPDATE TAG
 export const updateTag = async (req, res) => {
   try {
+    const { name_en, name_sl } = req.body;
+
     const tag = await Tag.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { name_en, name_sl },
       { new: true, runValidators: true }
     );
 
@@ -46,13 +59,13 @@ export const updateTag = async (req, res) => {
       return res.status(404).json({ error: "Tag not found" });
     }
 
-    res.json(tag);
+    res.status(200).json(tag);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// DELETE - NEW
+// DELETE TAG
 export const deleteTag = async (req, res) => {
   try {
     const tag = await Tag.findByIdAndDelete(req.params.id);
@@ -61,7 +74,10 @@ export const deleteTag = async (req, res) => {
       return res.status(404).json({ error: "Tag not found" });
     }
 
-    res.json({ message: "Tag deleted successfully", tag });
+    res.status(200).json({ 
+      message: "Tag deleted successfully", 
+      tag 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

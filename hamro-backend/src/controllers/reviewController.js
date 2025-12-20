@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Review from "../models/Review.js";
 
 /**
@@ -7,38 +8,31 @@ export const createReview = async (req, res) => {
   try {
     const { programId, userName, rating, comment } = req.body;
 
+    // Validate required fields
     if (!programId || !userName || !rating || !comment) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
+    // Validate comment length
     if (comment.length > 300) {
-      return res.status(400).json({
-        success: false,
-        message: "Comment must be 300 characters or less",
-      });
+      return res.status(400).json({ success: false, message: "Comment must be 300 characters or less" });
+    }
+
+    // Validate programId
+    if (!mongoose.Types.ObjectId.isValid(programId.trim())) {
+      return res.status(400).json({ success: false, message: "Invalid program ID" });
     }
 
     const review = await Review.create({
-      programId,
-      userName,
+      programId: programId.trim(),
+      userName: userName.trim(),
       rating,
-      comment,
+      comment: comment.trim(),
     });
 
-    res.status(201).json({
-      success: true,
-      message: "Review added successfully",
-      data: review,
-    });
+    res.status(201).json({ success: true, message: "Review added successfully", data: review });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to add review",
-      error: error.message,
-    });
+    res.status(500).json({ success: false, message: "Failed to add review", error: error.message });
   }
 };
 
@@ -47,20 +41,19 @@ export const createReview = async (req, res) => {
  */
 export const getProgramReviews = async (req, res) => {
   try {
-    const { programId } = req.params;
+    const programId = req.params.programId.trim();
 
-    const reviews = await Review.find({ programId }).sort({
-      createdAt: -1,
-    });
+    if (!mongoose.Types.ObjectId.isValid(programId)) {
+      return res.status(400).json({ success: false, message: "Invalid program ID" });
+    }
 
+    const reviews = await Review.find({ programId }).sort({ createdAt: -1 });
     const totalReviews = reviews.length;
 
     const averageRating =
       totalReviews === 0
         ? 0
-        : (
-            reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
-          ).toFixed(1);
+        : (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1);
 
     const ratingSummary = {
       5: reviews.filter(r => r.rating === 5).length,
@@ -78,10 +71,55 @@ export const getProgramReviews = async (req, res) => {
       reviews,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch reviews",
-      error: error.message,
+    res.status(500).json({ success: false, message: "Failed to fetch reviews", error: error.message });
+  }
+};
+
+/**
+ * Update a review
+ */
+export const updateReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id.trim())) {
+      return res.status(400).json({ success: false, message: "Invalid review ID" });
+    }
+
+    const review = await Review.findByIdAndUpdate(id.trim(), req.body, {
+      new: true,
+      runValidators: true,
     });
+
+    if (!review) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Review updated successfully", data: review });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to update review", error: error.message });
+  }
+};
+
+/**
+ * Delete a review
+ */
+export const deleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id.trim())) {
+      return res.status(400).json({ success: false, message: "Invalid review ID" });
+    }
+
+    const review = await Review.findByIdAndDelete(id.trim());
+
+    if (!review) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Review deleted successfully", data: review });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to delete review", error: error.message });
   }
 };
